@@ -7,7 +7,7 @@ Lớp học phần: **INT4410 - Bảo mật trong IoT**
 
 ## 1. Thông tin sinh viên thực hiện
 - **Họ và tên:** Lương Thị Thanh Thanh
-- **Email:** nissluu@gmail.com
+- **Email:** luongthanhthanh14082005@gmail.com (mail chính)
 - **Đề tài số:** 23
 - **Tên đề tài:** Man-in-the-Middle (MITM) trong IoT và phòng chống
 
