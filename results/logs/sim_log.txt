@@ -1,0 +1,40 @@
+======================================================================
+MÔ PHỎNG THIẾT BỊ IoT XÁC THỰC CERTIFICATE PINNING (MBED TLS PRINCIPLE)
+======================================================================
+[*] Đang chuẩn bị kết nối tới: howsmyssl.com:443
+[*] Trạng thái giả lập tấn công MITM: TẮT (Normal)
+[*] Mã băm chứng chỉ đã ghim (Pinned Hash): b136ce2f59d2e3fffafaafc1ad1980271acad95dc6c9197f3b669a0d222a716f
+
+[+] Bước 1: Thiết lập kết nối TCP thành công.
+[+] Bước 2: Bắt tay TLS thành công. Đường truyền đã được mã hóa.
+[+] Bước 3: Đã tải xuống chứng chỉ X.509 từ Server (1329 bytes).
+[+] Bước 4: Mã băm SHA-256 chứng chỉ thực tế: b136ce2f59d2e3fffafaafc1ad1980271acad95dc6c9197f3b669a0d222a716f
+[*] Bước 5: Tiến hành đối chiếu mã băm chứng chỉ (Pinning Check)...
+[OK] XÁC THỰC THÀNH CÔNG: Mã băm chứng chỉ trùng khớp hoàn toàn!
+[✓] Thiết bị IoT xác nhận Server này là tin cậy và chính chủ.
+[*] Gửi dữ liệu telemetry an toàn...
+[+] Server phản hồi thành công (đọc được 360 bytes).
+[*] Đã đóng socket an toàn.
+======================================================================
+
+======================================================================
+MÔ PHỎNG THIẾT BỊ IoT XÁC THỰC CERTIFICATE PINNING (MBED TLS PRINCIPLE)
+======================================================================
+[*] Đang chuẩn bị kết nối tới: howsmyssl.com:443
+[*] Trạng thái giả lập tấn công MITM: KÍCH HOẠT (MITM Active)
+[*] Mã băm chứng chỉ đã ghim (Pinned Hash): b136ce2f59d2e3fffafaafc1ad1980271acad95dc6c9197f3b669a0d222a716f
+
+[+] Bước 1: Thiết lập kết nối TCP thành công.
+[+] Bước 2: Bắt tay TLS thành công. Đường truyền đã được mã hóa.
+[+] Bước 3: Đã tải xuống chứng chỉ X.509 từ Server (1329 bytes).
+[+] Bước 4: Mã băm SHA-256 chứng chỉ thực tế: b136ce2f59d2e3fffafaafc1ad1980271acad95dc6c9197f3b669a0d222a716f
+[*] Bước 5: Tiến hành đối chiếu mã băm chứng chỉ (Pinning Check)...
+[!] CẢNH BÁO: Đang giả lập MITM. Kẻ tấn công trình chứng chỉ giả!
+[X] LỖI CỰC KỲ NGUY HIỂM: Mã băm chứng chỉ KHÔNG TRÙNG KHỚP với Pin đã ghim!
+    [!] Cảnh báo tấn công Man-in-the-Middle (MITM) hoặc DNS Spoofing!
+
+[!] LỖI BẢO MẬT SSL/TLS: ('VerificationAlert: Certificate Pinning Mismatch! Access Denied.',)
+[X] Kết nối đã bị ngắt lập tức để bảo vệ dữ liệu thiết bị IoT.
+[*] Đã đóng socket an toàn.
+======================================================================
+
