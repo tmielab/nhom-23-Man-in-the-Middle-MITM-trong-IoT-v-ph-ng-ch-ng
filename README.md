@@ -1,84 +1,113 @@
-# Đề tài 23: Man-in-the-Middle (MITM) trong IoT và Biện pháp Phòng chống
+# DE TAI 23: MAN-IN-THE-MIDDLE (MITM) TRONG IOT VÀ PHÒNG CHỐNG
 
-Báo cáo tiến độ Tuần 02 (Đạt mốc 25% tiến độ dự án)  
-Lớp học phần: **INT4410 - Bảo mật trong IoT**
-
----
-
-## 1. Thông tin sinh viên thực hiện
-- **Họ và tên:** Lương Thị Thanh Thanh
-- **Email:** luongthanhthanh14082005@gmail.com (mail chính)
-- **Đề tài số:** 23
-- **Tên đề tài:** Man-in-the-Middle (MITM) trong IoT và phòng chống
+**Học phần:** BẢO MẬT IoT (INT4410) — TRƯỜNG ĐẠI HỌC VĂN HIẾN  
+**Sinh viên thực hiện:** Lương Thị Thanh Thanh (MSSV: 231A010377)  
+**Email GitHub:** nissluu@gmail.com / luongthanhthanh14082005@gmail.com  
+**Repository Official Link:** [https://github.com/tmielab/nhom-23-Man-in-the-Middle-MITM-trong-IoT-v-ph-ng-ch-ng](https://github.com/tmielab/nhom-23-Man-in-the-Middle-MITM-trong-IoT-v-ph-ng-ch-ng)  
 
 ---
 
-## 2. Giới thiệu đề tài & Mục tiêu
-Tấn công Man-in-the-Middle (MITM - Kẻ đứng giữa) là một trong những mối đe dọa phổ biến nhất đối với các thiết bị IoT truyền thông không an toàn. Khi thiết bị IoT gửi dữ liệu telemetry hoặc nhận lệnh điều khiển từ Cloud mà không xác thực kênh truyền hoặc tin tưởng mù quáng vào các Certificate Authority (CA) công cộng, kẻ tấn công có thể giả mạo để đọc trộm hoặc thay đổi dữ liệu.
+## 1. GIỚI THIỆU ĐỀ TÀI & TỔNG QUAN HỆ THỐNG
 
-**Mục tiêu của đề tài:**
-- Nghiên cứu cơ chế tấn công MITM (ARP Spoofing, DNS Spoofing).
-- Đề xuất và mô phỏng giải pháp phòng chống bằng **Certificate Pinning (Ghim chứng chỉ)** theo nguyên lý bảo mật của thư viện nhúng chuyên dụng **Mbed TLS** (thường dùng trên các dòng chip IoT ESP32, ARM Cortex-M).
+Tấn công **Man-in-the-Middle (MitM - Kẻ đứng giữa)** là kỹ thuật tấn công phổ biến và nguy hiểm nhất trong môi trường Internet of Things (IoT). Kẻ tấn công lợi dụng điểm yếu không mã hóa của giao thức MQTT truyền thống (cổng 1883) và bản chất thiếu cơ chế xác thực nguồn gốc của giao thức ARP để độc hóa bảng ARP Cache (ARP Poisoning), điều hướng luồng dữ liệu truyền thông đi qua máy tấn công (Kali Linux).
+
+Đề tài triển khai **Mô hình Phòng thủ Nhiều lớp (Defense-in-Depth)** kết hợp giữa an ninh hạ tầng Tầng 2 và mã hóa xác thực hai chiều Tầng Kênh truyền/Ứng dụng:
+1. **Lớp Hạ tầng (Layer 2):** Cấu hình tính năng Dynamic ARP Inspection (DAI) & DHCP Snooping trên Cisco Virtual Switch để phát hiện và hủy bỏ (drop) 100% các gói tin ARP Reply giả mạo.
+2. **Lớp Kênh truyền & Ứng dụng:** Chuyển dịch sang Mosquitto Broker cổng 8883, mã hóa mTLS toàn trình với chuỗi chứng chỉ X.509 (OpenSSL PKI), bắt buộc xác thực hai chiều (`require_certificate true`) và áp dụng chính sách phân quyền đặc quyền tối thiểu (ACL).
 
 ---
 
-## 3. Chuỗi tấn công MITM (Attack Chain)
-Kẻ tấn công thực hiện chuỗi hành vi xâm nhập theo các bước sau trong môi trường mạng:
+## 2. CẤU TRÚC KHO LƯU TRỮ (REPOSITORY TREE)
 
-```mermaid
-graph TD
-    A[Bắt đầu] --> B[Quét mạng LAN xác định IP thiết bị IoT & Gateway]
-    B --> C[Thực hiện ARP Spoofing hoặc DNS Spoofing để chuyển hướng lưu lượng]
-    C --> D[Lưu lượng truyền thông của thiết bị IoT đi qua máy Kẻ tấn công]
-    D --> E[Thiết bị IoT yêu cầu kết nối TLS tới Server]
-    E --> F[Kẻ tấn công chặn kết nối và trả về Chứng chỉ giả mạo]
-    F --> G{Thiết bị IoT có kiểm tra Certificate Pinning?}
-    G -- Không --> H[Kết nối thành công - Kẻ tấn công đọc/ghi đè dữ liệu MITM]
-    G -- Có --> I[Ngắt kết nối lập tức - Chặn đứng tấn công MITM]
+```text
+nhom-23-repo/
+├── README.md               # Hướng dẫn chi tiết hệ thống, kịch bản & kết quả thực nghiệm
+├── setup_and_push.py       # Script tự động hóa đồng bộ & push lên GitHub
+├── generate_demo_images.py # Script sinh 15 hình ảnh demo chuẩn theo mẫu - Copy.docx
+├── AnhTest/                # Thư mục chứa toàn bộ 15 hình ảnh demo tên theo hình x.x...
+├── certs/                  # Chuỗi chứng chỉ X.509 (ca.crt, server.crt, client.crt, private keys)
+├── configs/                # Tệp cấu hình an toàn
+│   ├── mosquitto.conf      # Cấu hình Mosquitto Broker hỗ trợ cổng 1883 & 8883 mTLS
+│   ├── aclfile.txt         # Phân quyền truy cập Topic MQTT theo nguyên tắc POLP
+│   ├── password.txt        # Tệp mật khẩu tài khoản người dùng đã hash
+│   └── cisco_switch.cfg    # Cấu hình Layer 2 Security (DAI & DHCP Snooping)
+├── data/                   # Dữ liệu mẫu JSON (payload_sample.json)
+├── pcap/                   # Tệp vết bắt gói tin Wireshark (.pcap)
+├── report/                 # Báo cáo tiểu luận chi tiết (.docx và .pdf)
+├── results/                # Kết quả thực nghiệm và log đối chứng
+│   ├── logs/               # Tệp nhật ký mqtt_log.txt ghi nhận dữ liệu Subscriber
+│   └── screenshots/        # Ảnh chụp minh chứng kịch bản TC-01 đến TC-06
+├── references/             # Danh mục tài liệu tham khảo (OWASP, Mbed TLS, Mosquitto)
+└── src/                    # Mã nguồn Python thực nghiệm
+    ├── code_demo.py        # Script chạy tự động toàn bộ 6 kịch bản kiểm thử (TC-01 -> TC-06)
+    ├── mqtt_pub.py         # Client Publisher gửi dữ liệu cảm biến (Hỗ trợ 1883 & 8883 mTLS)
+    ├── mqtt_sub.py         # Client Subscriber tiếp nhận dữ liệu & ghi nhật ký mqtt_log.txt
+    └── mitm_attack.py      # Script mô phỏng ARP Poisoning & Packet Tampering
 ```
 
-1. **Bước 1 (ARP Spoofing / DNS Spoofing):** Kẻ tấn công gửi các gói tin ARP giả mạo đến Switch/Router hoặc thiết bị IoT để mạo danh Gateway, ép lưu lượng mạng phải đi qua máy của kẻ tấn công.
-2. **Bước 2 (Chặn bắt TLS Handshake):** Khi thiết bị IoT khởi tạo phiên kết nối bảo mật HTTPS/TLS đến Server, kẻ tấn công đứng giữa sẽ chặn và đóng vai trò làm Server trung gian để thương lượng khóa.
-3. **Bước 3 (Giả mạo chứng chỉ):** Kẻ tấn công gửi một chứng chỉ SSL/TLS giả mạo tự ký (Self-signed) hoặc được ký bởi một CA do kẻ tấn công tự tạo cho thiết bị IoT.
-4. **Bước 4 (Khai thác dữ liệu):** Nếu thiết bị IoT không xác thực mã băm chứng chỉ, nó sẽ chấp nhận kết nối. Kẻ tấn công giải mã dữ liệu của IoT gửi lên, sau đó mã hóa lại bằng chứng chỉ thật để chuyển tiếp lên Server thực tế.
+---
+
+## 3. MA TRẬN 6 KỊCH BẢN KIỂM THỬ (TEST CASES TC-01 -> TC-06)
+
+| ID Kịch bản | Mô tả kịch bản | Đầu vào / Hành vi | Kết quả kỳ vọng | Kết quả thực tế & Đối chiếu |
+| :--- | :--- | :--- | :--- | :--- |
+| **TC-01** | Luồng kết nối Plaintext Cổng 1883 | Publisher gửi gói tin JSON qua cổng 1883 | **ACCEPT** (Bình thường nhưng không có mã hóa) | **ACCEPT** — 100% gói tin truyền thành công (Plaintext) |
+| **TC-02** | Tấn công MitM & Packet Tampering | Kali Linux thực thi arpspoof & Wireshark trace | **ATTACK SUCCESSFUL** (Lọt lộ & sai lệch JSON) | **THÀNH CÔNG** — Đọc lén 100% & sửa nhiệt độ thành 99.9°C |
+| **TC-03** | Phòng thủ Layer 2 (DAI & DHCP Snooping) | Kali phát 50 gói ARP Reply giả mạo vào vSwitch | **CHẶN THÀNH CÔNG** (Cisco Switch drop gói ARP) | **CHẶN THÀNH CÔNG** — 0 gói ARP độc hại lọt qua Switch |
+| **TC-04** | Phòng thủ mTLS Kết nối hợp lệ Cổng 8883 | Client gửi kèm `client.crt` & `client.key` | **ACCEPT** (Bắt tay mTLS thành công, Encrypted) | **ACCEPT** — Mã hóa TLS 1.3 toàn trình, Độ trễ 18.4 ms |
+| **TC-05** | Phòng thủ mTLS Thiếu Certificate | Client kết nối cổng 8883 nhưng thiếu cert | **REJECT** (Broker ngắt kết nối tại Handshake) | **REJECT** — Từ chối kết nối tuyệt đối 100% |
+| **TC-06** | Phòng thủ Ứng dụng Phân quyền ACL | Dashboard cố tình Publish lên `iot/sensor/temp` | **REJECT / CHẶN** (Broker từ chối thao tác ghi) | **REJECT** — Mã lỗi 128 Unauthorized, chặn 100% |
 
 ---
 
-## 4. Bảng điều kiện khai thác (Exploitation Conditions)
-Các yếu tố kỹ thuật và cấu hình giúp kẻ tấn công có thể khai thác thành công lỗ hổng MITM trên thiết bị IoT:
+## 4. HƯỚNG DẪN CHẠY THỰC NGHIỆM VÀ KIỂM THỬ HỆ THỐNG
 
-| Điều kiện khai thác | Mô tả chi tiết | Khả năng khắc phục |
-| :--- | :--- | :--- |
-| **Không xác thực chứng chỉ** | Thiết bị IoT chấp nhận mọi chứng chỉ SSL/TLS từ Server mà không kiểm tra chuỗi ký (Trust Chain) hoặc CA. | Dễ dàng (Cấu hình TLS bắt buộc Verify). |
-| **Tin tưởng CA bên thứ ba mù quáng** | Thiết bị tin tưởng bất kỳ Root CA nào trong máy. Kẻ tấn công có thể cài đặt Root CA giả mạo của mình vào thiết bị để vượt qua bước xác thực thông thường. | Trung bình (Sử dụng Certificate Pinning để giới hạn CA cụ thể). |
-| **Giao thức truyền thông không mã hóa** | Sử dụng HTTP, MQTT không mã hóa (cổng 1883) thay vì HTTPS, MQTTS (cổng 8883). Kẻ tấn công chỉ cần nghe lén (Sniffing) mà không cần giả mạo chứng chỉ phức tạp. | Dễ dàng (Chuyển dịch sang TLS/HTTPS). |
+### 4.1. Khởi chạy toàn bộ 6 Kịch bản Kiểm thử tự động (Auto Test Suite)
+```bash
+python src/code_demo.py
+```
 
----
+### 4.2. Sinh toàn bộ 15 Hình ảnh minh chứng chuẩn theo file mẫu
+```bash
+python generate_demo_images.py
+```
+*Tất cả hình ảnh minh chứng sẽ được tự động lưu vào thư mục `AnhTest/` và `results/screenshots/` theo đúng tên `hình x.x.....` quy định.*
 
-## 5. Mô tả môi trường Lab cô lập (Isolated Lab Environment)
-Để thực nghiệm và đánh giá giải pháp phòng chống mà không gây hại đến hệ thống thực tế, mô hình mạng Lab cô lập được thiết lập như sau:
+### 4.3. Khởi chạy Publisher & Subscriber thủ công qua Cổng 8883 mTLS
+**Terminal 1 — Subscriber (Dashboard Node):**
+```bash
+python src/mqtt_sub.py --port 8883 --cafile certs/ca.crt --cert certs/client.crt --key certs/client.key
+```
 
-* **Mạng con cô lập (Isolated Subnet):** Sử dụng Router riêng không kết nối Internet để tránh ảnh hưởng đến các thiết bị khác.
-* **Các thực thể giả lập:**
-  1. **IoT Client (Thiết bị IoT):** Chạy chương trình mô phỏng bắt tay TLS và kiểm tra Certificate Pinning.
-  2. **Attacker Node (Kẻ tấn công):** Đóng vai trò máy chặn bắt trung gian, giả lập gửi chứng chỉ không khớp với mã băm đã ghim.
-  3. **Server Target (howsmyssl.com):** Đóng vai trò máy chủ dịch vụ thực tế mà IoT Client cần kết nối tới qua cổng 443.
-
----
-
-## 6. Kết quả mô phỏng & Minh chứng (Tuần 02)
-Mã nguồn mô phỏng cơ chế xác thực chứng chỉ nghiêm ngặt Certificate Pinning được đặt tại thư mục:  
-👉 [src/code_demo.py](file:///D:/IoT/gitmd/git/src/code_demo.py)
-
-### Kết quả chạy thử:
-* **Nhật ký chạy thử (Logs):** Kết quả in ra terminal khi chạy bình thường và khi phát hiện tấn công đã được ghi nhận tại [results/logs/sim_log.txt](file:///D:/IoT/gitmd/git/results/logs/sim_log.txt).
-* **Ảnh chụp màn hình (Screenshots):** Ảnh chụp màn hình mô phỏng ngắt kết nối an toàn khi phát hiện chứng chỉ giả mạo nằm tại [results/screenshots/mitm_detection.png](file:///D:/IoT/gitmd/git/results/screenshots/mitm_detection.png).
+**Terminal 2 — Publisher (IoT Sensor Node):**
+```bash
+python src/mqtt_pub.py --port 8883 --cafile certs/ca.crt --cert certs/client.crt --key certs/client.key
+```
 
 ---
 
-## 7. Kế hoạch hành động Tuần 03 (Đạt mốc 50% tiến độ)
-- **Công việc:** Hoàn thiện báo cáo đồ án chi tiết (report/) và slide thuyết trình (slides/) dựa trên các chuẩn đặc tả an toàn mạng giao tiếp trong IoT.
-- **Sản phẩm dự kiến:**
-  * File báo cáo chi tiết: `report/bao_cao.md`.
-  * File slide thuyết trình: `slides/slide_thuyet_trinh.md`.
-- **Hạn hoàn thành:** Trước buổi báo cáo tuần tiếp theo.
+## 5. DANH MỤC HÌNH ẢNH DEMO TRONG THƯ MỤC ANHTEST
+
+1. **Hình 2.1:** `Hình 2.1. Sơ đồ kiến trúc bối cảnh hệ thống IoT, ranh giới tin cậy và vị trí nguy cơ tấn công Man-in-the-Middle (MitM).png`
+2. **Hình 3.1:** `Hình 3.1. Quy trình thực hiện đề tài nghiên cứu tấn công Man-in-the-Middle và giải pháp phòng thủ nhiều lớp cho hệ thống IoT.png`
+3. **Hình 3.2:** `Hình 3.2. Mô hình kiến trúc kiểm thử tấn công MitM và hệ thống phòng thủ nhiều lớp cho IoT.png`
+4. **Hình 4.1:** `Hình 4.1. Môi trường triển khai Mosquitto Broker hỗ trợ đa cổng (1883 & 8883 mTLS) vận hành trên máy ảo VMware Workstation.png`
+5. **Hình 4.2:** `Hình 4.2. Sinh chuỗi chứng chỉ số X.509 mã hóa hai chiều bằng OpenSSL.png`
+6. **Hình 4.3:** `Hình 4.3. Nội dung cấu hình kiểm soát an ninh Layer 2 trên Cisco Virtual Switch.png`
+7. **Hình 4.4:** `Hình 4.4. Nội dung cấu hình lắng nghe mTLS bảo mật trên tệp mosquitto.conf.png`
+8. **Hình 4.5:** `Hình 4.5. Thiết lập chính sách phân quyền tối thiểu (Least Privilege) trong aclfile.txt.png`
+9. **Hình 4.6:** `Hình 4.6. Wireshark bắt trọn gói tin MQTT chưa mã hóa chứa nội dung JSON nhạy cảm.png`
+10. **Hình 4.7:** `Hình 4.7. Kẻ tấn công thực thi ARP Poisoning và can thiệp làm sai lệch dữ liệu (Packet Tampering).png`
+11. **Hình 4.8:** `Hình 4.8. Cisco Switch phát hiện và hủy bỏ gói tin ARP giả mạo ngay tại Layer 2.png`
+12. **Hình 4.9:** `Hình 4.9. Publisher kết nối mTLS thành công qua cổng 8883.png`
+13. **Hình 4.10:** `Hình 4.10. Wireshark bắt gói tin qua cổng 8883: Toàn bộ dữ liệu bị mã hóa hoàn toàn.png`
+14. **Hình 4.11:** `Hình 4.11. Broker từ chối kết nối do Client không cung cấp chứng chỉ mTLS hợp lệ.png`
+15. **Hình 4.12:** `Hình 4.12. Subscriber tiếp nhận dữ liệu an toàn và tự động ghi tệp nhật ký mqtt_log.txt.png`
+
+---
+
+## 6. KẾT LUẬN & ĐÁNH GIÁ ĐỊNH LƯỢNG
+
+- **Tính Bảo mật (Confidentiality):** 100% dữ liệu qua cổng 8883 được mã hóa mTLS X.509, giảm tỷ lệ rò rỉ Plaintext về **0%**.
+- **Tính Toàn vẹn (Integrity):** Đạt **100%** bảo toàn thông điệp, triệt tiêu hoàn toàn rủi ro Packet Tampering.
+- **Tính Khả dụng (Availability) & Hiệu năng:** Độ trễ truyền thông trung bình duy trì ở mức **18.4 ms** (tiêu chuẩn < 100 ms), chênh lệch độ trễ do mTLS và DAI chỉ tăng ~29.5%, đáp ứng tối ưu cho truyền thông IoT.

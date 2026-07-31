@@ -1,0 +1,7 @@
+{
+  "device": "sensor01",
+  "temperature": 30.5,
+  "humidity": 70.2,
+  "status": "NORMAL",
+  "timestamp": "2026-07-31 11:45:10"
+}

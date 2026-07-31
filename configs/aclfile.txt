@@ -1,0 +1,7 @@
+# ACL File for IoT System - Least Privilege Control
+user sensor01
+topic write iot/sensor/temp
+topic read iot/sensor/status
+
+user dashboard
+topic read iot/sensor/#

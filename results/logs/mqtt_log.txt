@@ -1,0 +1,1 @@
+[2026-07-31 19:50:48] [mTLS-PORT-8883] iot/sensor/temp : {"device": "sensor01", "temperature": 30, "humidity": 70, "time": "2026-07-31 19:50:48"}

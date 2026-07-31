@@ -1,23 +1,24 @@
 # Danh sách nguồn tài liệu tham khảo - Đề tài 23: MITM trong IoT
 
-Tài liệu này tổng hợp các nguồn học liệu từ hệ sinh thái tài liệu học tập cục bộ và các khuyến nghị quốc tế được sử dụng làm cơ sở thiết kế giải pháp phòng chống Man-in-the-Middle (MITM) trong IoT (đặc biệt là cơ chế Certificate Pinning).
+Tài liệu này tổng hợp 3 nguồn GitHub bắt buộc do Giảng viên phân công và các tiêu chuẩn bảo mật quốc tế cho Đề tài 23 (Man-in-the-Middle trong IoT và phòng chống - Hướng D).
 
-## 1. Tài liệu Ngữ cảnh Cục bộ (Local Resources)
-Các file đặc tả kỹ thuật học được từ hệ thống:
-- **[V1-IoT_Ecosystem_Requirements.md](../gitmd/V1-IoT_Ecosystem_Requirements.md)**: Định nghĩa các mức độ bảo mật (L1-L3), thiết kế chuỗi cung ứng an toàn, và bảo mật cấu trúc phát triển hệ phần mềm nhúng.
-- **[V2-User_Space_Application_Requirements.md](../gitmd/V2-User_Space_Application_Requirements.md)**: Định nghĩa yêu cầu về định danh thiết bị, mã hóa lưu trữ thông tin nhạy cảm và chuyển dịch sang mật mã học hậu lượng tử (Post-Quantum Cryptography).
-- **[V4-Communication_Requirements.md](../gitmd/V4-Communication_Requirements.md)**: Quy chuẩn kết nối mạng bảo mật, bắt buộc xác thực mã băm chứng chỉ (Certificate Pinning) tại điều khoản 4.1.5 nhằm chống lại tấn công nghe lén và sửa đổi dữ liệu.
-- **[checklist.md](../gitmd/checklist.md)**: Checklist đánh giá bảo mật tổng thể theo chuẩn OWASP IoT Security Testing Guide (ISTG).
+## 1. Ba (03) Nguồn GitHub Bắt Buộc Theo Hướng Dẫn Đề Tài 23
+1. **OWASP IoT Security Verification Standard (ISVS)**
+   - Link Repo: https://github.com/OWASP/IoT-Security-Verification-Standard-ISVS
+   - Mục đích: Bộ tiêu chuẩn xác minh bảo mật IoT, làm cơ sở kiểm tra tính an toàn kênh truyền và xác thực thiết bị.
+2. **Mbed TLS (ARM Cryptography & TLS Library)**
+   - Link Repo: https://github.com/Mbed-TLS/mbedtls
+   - Mục đích: Thư viện mã hóa TLS/DTLS siêu nhẹ dành cho thiết bị vi điều khiển IoT (ESP32, ARM Cortex-M), cung cấp hàm xác thực chứng chỉ `mbedtls_ssl_conf_verify()` và mã băm `mbedtls_sha256()`.
+3. **OWASP IoT Security Testing Guide (ISTG)**
+   - Link Repo: https://github.com/OWASP/owasp-istg
+   - Mục đích: Hướng dẫn chi tiết kiểm thử an toàn thông tin cho thiết bị và hệ sinh thái IoT, quy định checklist đánh giá nguy cơ nghe lén/MITM.
 
-## 2. Tiêu chuẩn quốc tế về Phòng chống MITM & Transport Layer
-Các nguồn tài liệu tham khảo mở rộng từ các tổ chức bảo mật uy tín:
-- **OWASP Transport Layer Protection Cheat Sheet**: Hướng dẫn cấu hình TLS bảo mật và triển khai Pinning.
+## 2. Tiêu chuẩn quốc tế bổ trợ về Transport Layer & Phòng chống MITM
+- **OWASP Transport Layer Protection Cheat Sheet**:
   - Link: https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html
-- **OWASP IoT Security Testing Guide (ISTG)**: Cẩm nang kiểm thử bảo mật thiết bị IoT.
-  - Link: https://owasp.org/www-project-internet-of-things/
-- **IETF RFC 7525 - Recommendations for Secure Use of TLS and DTLS**: Khuyến nghị cấu hình an toàn cho giao thức truyền thông TLS.
+- **IETF RFC 7525 - Recommendations for Secure Use of TLS and DTLS**:
   - Link: https://datatracker.ietf.org/doc/html/rfc7525
-- **NIST SP800-52r2 - Guidelines for TLS Implementations**: Hướng dẫn của Viện Tiêu chuẩn và Công nghệ Quốc gia Mỹ về cấu hình TLS.
-  - Link: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-121r2.pdf
-- **Mbed TLS (ARM Cryptography & TLS Library)**: Thư viện mã nguồn mở chuyên dụng cho các hệ thống nhúng (ESP32, STM32).
-  - Link: https://github.com/Mbed-TLS/mbedtls
+- **IETF RFC 7252 - The Constrained Application Protocol (CoAP)**:
+  - Link: https://datatracker.ietf.org/doc/html/rfc7252
+- **NIST SP800-52r2 - Guidelines for TLS Implementations**:
+  - Link: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf
